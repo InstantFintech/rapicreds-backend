@@ -1,2 +1,2 @@
 # rapicreds-backend
-Rapicreds backenc monolith
+Rapicreds backend monolith
