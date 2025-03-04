@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"rapicreds-backend/src/app/infra/controller"
 	"rapicreds-backend/src/app/infra/repository"
@@ -10,6 +11,17 @@ import (
 
 func InjectDependencies() *gin.Engine {
 	r := gin.Default()
+
+	r.Use(cors.New(cors.Config{
+		// Permitir solo solicitudes desde el frontend en localhost:5173 (ajusta el origen según necesites)
+		AllowOrigins: []string{"http://localhost:5173"},
+		// Permitir los métodos HTTP que quieras (GET, POST, PUT, DELETE)
+		AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
+		// Permitir las cabeceras necesarias
+		AllowHeaders: []string{"Content-Type", "Authorization"},
+		// Habilitar credenciales si es necesario
+		AllowCredentials: true,
+	}))
 
 	userDebtRestClient := restclient.NewUserDebtRestClient()
 	userDebtService := service.NewUserDebtService(userDebtRestClient)
@@ -24,8 +36,10 @@ func InjectDependencies() *gin.Engine {
 
 	controller.InitDB(db)
 
-	r.POST("/signup", controller.Signup)
-	r.POST("/login", controller.Login)
+	r.GET("/auth/valid-session", controller.IsAuth)
+
+	r.POST("/auth/signup", controller.Signup)
+	r.POST("/auth/login", controller.Login)
 
 	// Rutas para Google OAuth
 	r.GET("/auth/google", controller.GoogleLogin)

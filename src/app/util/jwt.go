@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var jwtKey = []byte("your_secret_key")
+var JwtKey = []byte("your_secret_key")
 
 func GenerateJWT(user domain.User) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
@@ -15,5 +15,5 @@ func GenerateJWT(user domain.User) (string, error) {
 		ExpiresAt: expirationTime.Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(jwtKey)
+	return token.SignedString(JwtKey)
 }

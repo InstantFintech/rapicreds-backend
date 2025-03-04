@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
@@ -12,6 +14,30 @@ var db *gorm.DB
 
 func InitDB(database *gorm.DB) {
 	db = database
+}
+
+func IsAuth(c *gin.Context) {
+	cookie, err := c.Cookie("session_token")
+	if err != nil {
+		c.JSON(http.StatusNotFound, domain.Response{Message: "Not found cookie"})
+		return
+	}
+
+	tokenString := cookie
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return util.JwtKey, nil
+	})
+
+	if err != nil || !token.Valid {
+		c.JSON(http.StatusNotFound, domain.Response{Message: "Not valid token"})
+		return
+	}
+
+	c.JSON(http.StatusOK, domain.Response{Message: "Valid token"})
+	return
 }
 
 func Signup(c *gin.Context) {
@@ -40,6 +66,8 @@ func Signup(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
 		return
 	}
+
+	c.SetCookie("session_token", token, 3600, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }

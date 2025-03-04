@@ -7,6 +7,7 @@ import (
 
 func main() {
 	r := config.InjectDependencies()
+
 	err := r.Run(":8080")
 	if err != nil {
 		log.Fatal("Error:", err)
