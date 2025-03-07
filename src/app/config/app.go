@@ -36,10 +36,13 @@ func InjectDependencies() *gin.Engine {
 
 	controller.InitDB(db)
 
+	r.GET("/auth/remove-session", controller.RemoveSession)
 	r.GET("/auth/valid-session", controller.IsAuth)
 
 	r.POST("/auth/signup", controller.Signup)
 	r.POST("/auth/login", controller.Login)
+
+	r.GET("/user/role", controller.GetRole)
 
 	// Rutas para Google OAuth
 	r.GET("/auth/google", controller.GoogleLogin)

@@ -3,13 +3,15 @@ package domain
 import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"rapicreds-backend/src/app/domain/constants"
 )
 
 type User struct {
-	ID       uint   `json:"id" gorm:"primaryKey"`
-	Email    string `json:"email"`
-	Password string `json:"password,omitempty"`
-	GoogleID string `json:"google_id,omitempty"`
+	ID       uint               `json:"id" gorm:"primaryKey"`
+	Email    string             `json:"email"`
+	Password string             `json:"password,omitempty"`
+	GoogleID string             `json:"google_id,omitempty"`
+	Role     constants.UserRole `json:"role,omitempty,"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
