@@ -65,6 +65,7 @@ func GetLoan(c *gin.Context) {
 
 	cookie, err := c.Cookie("session_token")
 	if err != nil {
+		fmt.Printf("Not found cookie")
 		c.JSON(http.StatusNotFound, domain.Response{Message: "Not found cookie"})
 		return
 	}
@@ -79,6 +80,8 @@ func GetLoan(c *gin.Context) {
 	})
 
 	if err != nil || !token.Valid {
+		fmt.Printf("Not valid token")
+
 		c.JSON(http.StatusNotFound, domain.Response{Message: "Not valid token"})
 		return
 	}
@@ -87,6 +90,8 @@ func GetLoan(c *gin.Context) {
 
 	var user domain.User
 	if err := db.Where("id = ?", userID).First(&user).Error; err != nil {
+		fmt.Printf("Not found user")
+
 		c.JSON(http.StatusNotFound, gin.H{"error": "not found user"})
 		return
 	}
