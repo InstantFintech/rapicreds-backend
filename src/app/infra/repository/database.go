@@ -1,9 +1,10 @@
 package repository
 
 import (
+	"rapicreds-backend/src/app/domain"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"rapicreds-backend/src/app/domain"
 )
 
 func InitDB() *gorm.DB {
@@ -13,5 +14,6 @@ func InitDB() *gorm.DB {
 		panic("failed to connect database")
 	}
 	db.AutoMigrate(&domain.User{})
+	db.AutoMigrate(&domain.UserLoan{})
 	return db
 }

@@ -2,13 +2,14 @@ package controller
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"net/http"
 	"rapicreds-backend/src/app/domain"
 	"rapicreds-backend/src/app/domain/constants"
 	"rapicreds-backend/src/app/util"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 var db *gorm.DB
@@ -21,39 +22,6 @@ func RemoveSession(c *gin.Context) {
 	c.SetCookie("session_token", "", -1, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, domain.Response{Message: "Successfully removed"})
-	return
-}
-
-func GetRole(c *gin.Context) {
-	cookie, err := c.Cookie("session_token")
-	if err != nil {
-		c.JSON(http.StatusNotFound, domain.Response{Message: "Not found cookie"})
-		return
-	}
-
-	tokenString := cookie
-	claims := &jwt.StandardClaims{}
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return util.JwtKey, nil
-	})
-
-	if err != nil || !token.Valid {
-		c.JSON(http.StatusNotFound, domain.Response{Message: "Not valid token"})
-		return
-	}
-
-	userID := claims.Subject
-
-	var user domain.User
-	if err := db.Where("id = ?", userID).First(&user).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "not found user"})
-		return
-	}
-
-	c.JSON(http.StatusOK, domain.Response{Message: string(user.Role)})
 	return
 }
 

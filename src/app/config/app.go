@@ -1,12 +1,13 @@
 package config
 
 import (
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"rapicreds-backend/src/app/infra/controller"
 	"rapicreds-backend/src/app/infra/repository"
 	"rapicreds-backend/src/app/infra/restclient"
 	"rapicreds-backend/src/app/infra/service"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func InjectDependencies() *gin.Engine {
@@ -36,17 +37,24 @@ func InjectDependencies() *gin.Engine {
 
 	controller.InitDB(db)
 
+	r.GET("/api/contract-model", controller.ViewContractModel)
+
 	r.GET("/auth/remove-session", controller.RemoveSession)
 	r.GET("/auth/valid-session", controller.IsAuth)
 
 	r.POST("/auth/signup", controller.Signup)
 	r.POST("/auth/login", controller.Login)
 
-	r.GET("/user/role", controller.GetRole)
+	r.GET("/user", controller.GetUser)
+	r.GET("/user/verificated", controller.IsVerified)
+	r.PUT("/user", controller.UpdateUser)
 
 	// Rutas para Google OAuth
 	r.GET("/auth/google", controller.GoogleLogin)
 	r.GET("/auth/google/callback", controller.GoogleCallback)
+
+	r.POST("/loan", controller.CreateLoan)
+	r.GET("/loan", controller.GetLoan)
 
 	return r
 }
